@@ -1,4 +1,4 @@
-import { Component } from "react/cjs/react.production.min";
+import { useState } from "react";
 
 import AppHeader from "../appHeader/AppHeader";
 import RandomChar from "../randomChar/RandomChar";
@@ -8,88 +8,47 @@ import ErrorBoundary from "../errorBoundary/ErrorBoundary";
 
 import decoration from '../../resources/img/vision.png';
 
-// начнем с разбра понятия API (Application Programming Interface) — «программный интерфейс приложения»
-// API это набор готовых функций и свойтв которые мы можем использовать
-// нарпимпе при разработке мобильного приложения нкжно повзоимодействовать с блютузом
-// для этого нужно обратиться к програмным внутрянностям телефона и сказвть в такой то момент сделай вот такие действия с блютузом
-// вот эти програмные внутрянности и называются API, блютуз API
-// так и работа с DOM деревом происходит через DOM API
-// мы использовали {JSON} Placeholder это тоже API для тестирования работы с сервером
+const App = () => {
 
-// В этом приложении мы будем использовать MARVEL API 
+    const [selectedChar, setChar] = useState(null);
 
-// const App = () => {
-//     return (
-//         <div className="app">
-//             <AppHeader/>
-//             <main>
-//                 <RandomChar/>
-//                 <div className="char__content">
-//                     <CharList/>
-//                     <CharInfo/>
-//                 </div>
-//                 <img className="bg-decoration" src={decoration} alt="vision"/>
-//             </main>
-//         </div>
-//     )
-// }
-
-// export default App;
-
-
-// LESSON 151 почему приходит 2 запроса и Жизненный цикл компонентов (Component Lifecycle)
-
-class App extends Component {
-
-    state = {
-        selectedChar: null
-    }
+    // state = {
+    //     selectedChar: null
+    // }
     
-    onCharSelected = (id) => { // подъём состояния устанавливаем значение свойства в state через аргумент
+    const onCharSelected = (id) => { // подъём состояния устанавливаем значение свойства в state через аргумент
                                // из компанента CharList приходит id записывается в стейт через метод onCharSelected
                                // и далше передаётся в компанент CharInfo
-        this.setState({
-            selectedChar: id
-        })
+        // this.setState({
+        //     selectedChar: id
+        // })
+        setChar(id);
     }
-    // state = {
-    //     showRandomChar: true
-    // }
 
-    // toggleRandomChar = () => {
-    //     this.setState((state) => {
-    //         return {
-    //             showRandomChar: !state.showRandomChar
-    //         }
-    //     })
-    // }
-
-    render() {
-        return (
-            <div className="app">
-                <AppHeader/>
-                <main>
-                    {/* {this.state.showRandomChar ? <RandomChar/> : null}
-                    <button onClick={this.toggleRandomChar}>CLick me</button> */}
+    return (
+        <div className="app">
+            <AppHeader/>
+            <main>
+                {/* {this.state.showRandomChar ? <RandomChar/> : null}
+                <button onClick={this.toggleRandomChar}>CLick me</button> */}
+                <ErrorBoundary>
+                    <RandomChar/>
+                </ErrorBoundary>
+                {/* <RandomChar/> */}
+                <div className="char__content">
+                    {/* <CharList onCharSelected={this.onCharSelected}/> */}
                     <ErrorBoundary>
-                        <RandomChar/>
+                        <CharList onCharSelected={onCharSelected}/>
                     </ErrorBoundary>
-                    {/* <RandomChar/> */}
-                    <div className="char__content">
-                        {/* <CharList onCharSelected={this.onCharSelected}/> */}
-                        <ErrorBoundary>
-                            <CharList onCharSelected={this.onCharSelected}/>
-                        </ErrorBoundary>
-                        <ErrorBoundary>
-                            <CharInfo charId={this.state.selectedChar}/>
-                        </ErrorBoundary>
-                        {/* <CharInfo charId={this.state.selectedChar}/> */}
-                    </div>
-                    <img className="bg-decoration" src={decoration} alt="vision"/>
-                </main>
-            </div>
-        )
-    }
+                    <ErrorBoundary>
+                        <CharInfo charId={selectedChar}/>
+                    </ErrorBoundary>
+                    {/* <CharInfo charId={this.state.selectedChar}/> */}
+                </div>
+                <img className="bg-decoration" src={decoration} alt="vision"/>
+            </main>
+        </div>
+    )
 }
 
 export default App;
