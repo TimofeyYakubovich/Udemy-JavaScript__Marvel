@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Spinner from '../spinner/spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 
 import './randomChar.scss';
 import mjolnir from '../../resources/img/mjolnir.png';
@@ -14,11 +14,15 @@ const RandomChar = () => {
     // }
 
     const [char, setChar] = useState({});
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
+    // эти состояния нам уже не нужны
+    // const [loading, setLoading] = useState(true);
+    // const [error, setError] = useState(false);
 
     // marvelService = new MarvelService();
-    const marvelService = new MarvelService();
+    // теперь уже сервис надо создавать не так
+    // const marvelService = new MarvelService();
+    // loading, error как состояния getCharacters для запроса получения персонажа
+    const {loading, error, getCharacters, clearError} = useMarvelService();
 
     useEffect(() => {
         updateChar();
@@ -42,7 +46,7 @@ const RandomChar = () => {
 
     const onCharLoaded = (char) => {
             setChar(char);
-            setLoading(false); 
+            // setLoading(false); // сдесь тоже можно удалить Loading он заменен в useMarvelService
     }
 
     // onCharLoading = () => {
@@ -51,21 +55,22 @@ const RandomChar = () => {
     //     })
     // }
 
-    const onCharLoading = () => {
-        setLoading(true);
-    }
-
-    // onError = () => { 
-    //     this.setState({ 
-    //         loading: false,
-    //         error: true
-    //     });
+    // onCharLoading onError уже не нужны они заменены в useMarvelService
+    // const onCharLoading = () => {
+    //     setLoading(true);
     // }
 
-    const onError = () => { 
-        setLoading(false);
-        setError(true);
-    }
+    // // onError = () => { 
+    // //     this.setState({ 
+    // //         loading: false,
+    // //         error: true
+    // //     });
+    // // }
+
+    // const onError = () => { 
+    //     setLoading(false);
+    //     setError(true);
+    // }
 
     // updateChar = () => {
     //     const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000); // Math.floor что бы округлить число до целого
@@ -77,12 +82,14 @@ const RandomChar = () => {
     // }
 
     const updateChar = () => {
+        clearError(); // даже если запрос пришел с ошибкой с следующим нажатием кнопки try it ошибка очистися 
         const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000); // Math.floor что бы округлить число до целого
-        onCharLoading();
-        marvelService
-            .getCharacters(id)
+        // onCharLoading(); заменен в useMarvelService
+        // marvelService
+        //     .getCharacters(id)
+        getCharacters(id)
             .then(onCharLoaded)
-            .catch(onError) // когда произошла ошибка внутри запроса срабатывает метод onError
+            // .catch(onError) заменен в useMarvelService // когда произошла ошибка внутри запроса срабатывает метод onError
     }
 
         // const {char, loading, error} = this.state;

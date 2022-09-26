@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Skeleton from '../skeleton/Skeleton';
@@ -18,10 +18,11 @@ const CharInfo = (props) => {
     // }
 
     const [char, setChar] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(false);
+    // const [loading, setLoading] = useState(false);
+    // const [error, setError] = useState(false);
 
-    const marvelService = new MarvelService();
+    // const marvelService = new MarvelService();
+    const {loading, error, getCharacters, clearError} = useMarvelService();
 
     // componentDidMount() {
     //     this.updateChar();
@@ -59,12 +60,14 @@ const CharInfo = (props) => {
             return;
         }
 
-        onCharLoading();
+        // onCharLoading();
 
-        marvelService
-            .getCharacters(charId)
+        // marvelService
+        //     .getCharacters(charId)
+        clearError();
+        getCharacters(charId)
             .then(onCharLoaded)
-            .catch(onError)
+            // .catch(onError)
     }
 
     // onCharLoaded = (char) => {
@@ -75,7 +78,7 @@ const CharInfo = (props) => {
     // }
     const onCharLoaded = (char) => {
         setChar(char);
-        setLoading(false);
+        // setLoading(false);
     }
 
     // onCharLoading = () => {
@@ -83,9 +86,9 @@ const CharInfo = (props) => {
     //         loading: true
     //     })
     // }
-    const onCharLoading = () => {
-        setLoading(true);
-    }
+    // const onCharLoading = () => {
+    //     setLoading(true);
+    // }
 
     // onError = () => { 
     //     this.setState({ 
@@ -93,10 +96,10 @@ const CharInfo = (props) => {
     //         error: true
     //     });
     // }
-    const onError = () => { 
-        setLoading(false);
-        setError(true);
-    }
+    // const onError = () => { 
+    //     setLoading(false);
+    //     setError(true);
+    // }
     
         // const {char, loading, error} = this.state;
 

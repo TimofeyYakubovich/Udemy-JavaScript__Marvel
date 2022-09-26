@@ -7,45 +7,41 @@ import CharInfo from "../charInfo/CharInfo";
 import ErrorBoundary from "../errorBoundary/ErrorBoundary";
 
 import decoration from '../../resources/img/vision.png';
+import AppBanner from "../appBanner/AppBanner";
+import ComicsList from "../comicsList/ComicsList";
+
+// маршрутизация или роутинг в веб приложениях
+// в клсическом сайте каждая страница это php или html файл каторый отвечает за определенный адрес URL
+// в веб приложения на месте старой страници создается новый интерфейс с помощью JS без перезагрузки страници
+// за роутинг отвечает отдельная библиотека React Router
+// устанавливаем библиотеку npm i react-router-dom@5.3.0
 
 const App = () => {
 
-    const [selectedChar, setChar] = useState(null);
-
-    // state = {
-    //     selectedChar: null
-    // }
+    // const [selectedChar, setChar] = useState(null);
     
-    const onCharSelected = (id) => { // подъём состояния устанавливаем значение свойства в state через аргумент
-                               // из компанента CharList приходит id записывается в стейт через метод onCharSelected
-                               // и далше передаётся в компанент CharInfo
-        // this.setState({
-        //     selectedChar: id
-        // })
-        setChar(id);
-    }
+    // const onCharSelected = (id) => { 
+    //     setChar(id);
+    // }
 
     return (
         <div className="app">
             <AppHeader/>
             <main>
-                {/* {this.state.showRandomChar ? <RandomChar/> : null}
-                <button onClick={this.toggleRandomChar}>CLick me</button> */}
-                <ErrorBoundary>
+                {/* <ErrorBoundary>
                     <RandomChar/>
                 </ErrorBoundary>
-                {/* <RandomChar/> */}
                 <div className="char__content">
-                    {/* <CharList onCharSelected={this.onCharSelected}/> */}
                     <ErrorBoundary>
                         <CharList onCharSelected={onCharSelected}/>
                     </ErrorBoundary>
                     <ErrorBoundary>
                         <CharInfo charId={selectedChar}/>
                     </ErrorBoundary>
-                    {/* <CharInfo charId={this.state.selectedChar}/> */}
                 </div>
-                <img className="bg-decoration" src={decoration} alt="vision"/>
+                <img className="bg-decoration" src={decoration} alt="vision"/> */}
+                <AppBanner/>
+                <ComicsList/>
             </main>
         </div>
     )
