@@ -74,6 +74,10 @@ const useMarvelService = () => {
         return res.data.results.map(_transformComics);
     }
     
+    const getComic = async (id) => {
+        const res = await request(`${_apiBAse}comics/${id}?${_apiKey}`)
+        return _transformComics(res.data.results[0]);
+    }
 
     // _transformCharacter = (res) => { // _ значит нельзя изменять
     const _transformCharacter = (char) => { // _ значит нельзя изменять
@@ -98,12 +102,15 @@ const useMarvelService = () => {
         return{
             id: comics.id,
             title: comics.title,
+            description: comics.description || 'There is no description',
+            pageCount: comics.pageCount ? `${comics.pageCount} р.` : 'No information about the number of pages',
             thumbnail: comics.thumbnail.path + '.' + comics.thumbnail.extension,
+            language: comics.textObjects.language || 'en-us',
             prices: comics.prices[0].price ? `${comics.prices[0].price}$` : 'not available'
         }
     }
     // так как useMarvelService наш кастомный хук тоже из него возвращаем все свойства и методы каторые нам нужны в приложении
-    return {loading, error, getAllCharacters, getCharacters, clearError, getAllComics}
+    return {loading, error, getAllCharacters, getCharacters, clearError, getAllComics, getComic}
 }
 
 // export default MarvelService; // экспортруем класс в index.js
