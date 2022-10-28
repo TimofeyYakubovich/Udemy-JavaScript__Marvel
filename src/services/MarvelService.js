@@ -54,6 +54,19 @@ const useMarvelService = () => {
          // с теми элиментами каторые приходят к ней по очереди
          // тоесть как char будет переходить каждый отдельный объект персонажа попорядку в итоге сформируется массив с объектами
     }
+
+    // вариант измененного метода getAllCharacters для поиска по имени с добавлением в запрос ${name ? `&name=${name}` : ''}
+    // если name передан как аргумент он подставиться в запрос если нет то обычный запрос
+    // const getAllCharacters1 = async (offset = _baseOffset, name) => {
+    //     const res = await request(`${_apiBAse}characters?limit=9&offset=${offset}${name ? `&name=${name}` : ''}&${_apiKey}`)
+    //     return res.data.results.map(_transformCharacter)
+    // }
+
+    const getCharacterByName = async (name) => {
+        const res = await request(`${_apiBAse}characters?name=${name}&${_apiKey}`)
+        return res.data.results.map(_transformCharacter)
+    }
+
     // метд для получения одного персонажа
     const getCharacters = async (id) => {
         //сдесь нужно изменить запрос limit и offset удаляем, ?apikey оставляем после characters вставляем /${id} каторый приходит как аргумент
@@ -110,7 +123,7 @@ const useMarvelService = () => {
         }
     }
     // так как useMarvelService наш кастомный хук тоже из него возвращаем все свойства и методы каторые нам нужны в приложении
-    return {loading, error, getAllCharacters, getCharacters, clearError, getAllComics, getComic}
+    return {loading, error, getAllCharacters, getCharacters, getCharacterByName, clearError, getAllComics, getComic}
 }
 
 // export default MarvelService; // экспортруем класс в index.js

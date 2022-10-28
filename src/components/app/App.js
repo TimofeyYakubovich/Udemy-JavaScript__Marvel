@@ -13,7 +13,10 @@ import Spinner from "../spinner/spinner";
 const Page404 = lazy(() => import('../pages/404'))
 const MainPage = lazy(() => import('../pages/MainPage'))
 const ComicsPage = lazy(() => import('../pages/ComicsPage'))
-const SingleComicPage = lazy(() => import('../pages/SIngleComicPage'))
+// const SingleComicPage = lazy(() => import('../pages/SIngleComicPage'))
+const SinglePage = lazy(() => import('../pages/SinglePage'))
+const SingleComicLayout = lazy(() => import('../pages/singleComicLayout/SingleComicLayout'))
+const SingleCharacterLayout = lazy(() => import('../pages/singleCharacterLayout/SingleCharacterLayout'))
 
 // import RandomChar from "../randomChar/RandomChar";
 // import CharList from "../charList/CharList";
@@ -118,10 +121,16 @@ const App = () => {
                             <Route exact path="/comics">
                                 <ComicsPage/>
                             </Route>
-                            <Route exact path="/comics/:comicId">
+                            {/* <Route exact path="/comics/:comicId"> */}
                                 {/* сдесь в юрл после /comics указываем уникальный идентификатор название придумываем сами
                                 это будет айдишка каждого отдельного комикса */}
-                                <SingleComicPage/>
+                                {/* <SingleComicPage/>
+                            </Route> */}
+                            <Route exact path="/comics/:id">
+                                <SinglePage Component={SingleComicLayout} dataType='comic'/>
+                            </Route>
+                            <Route exact path="/characters/:id">
+                                <SinglePage Component={SingleCharacterLayout} dataType='character'/>
                             </Route>
                             <Route path="*">
                                 <Page404/>

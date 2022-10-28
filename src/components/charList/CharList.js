@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import Spinner from '../spinner/spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -132,38 +133,42 @@ const CharList = (props) => {
             }
 
             return (
-                <li 
-                    className="char__item"
-                    tabIndex={0} // при помощи tabIndex можно поставить ручной фокус даже на дивы и спены
-                    // ref={this.setRef}
-                    // в классовом компаненте что бы устанавливать массив ссылок при помощи колбек рефов использовали функцию setRef
-                    // в ней напрямую пушили ссылку в массив
-                    // сейчас напишем функцию прямо внутри рефа
-                    // в ref может помещаться колбек реф каторый принимает в себя единственным аргументом тот элимент li на катором он был вызван
-                    ref={el => itemRefs.current[i] = el}
-                    // el - элимент на катором происходит действие, ссылка на дом элимент
-                    // сдесь будем использовать не push а простой синтаксис itemRefs.current[i] = el
-                    // в массив itemRefs.current складываем все элименты el попорядку
-                    key={item.id}
-                    onClick={() => {
-                        props.onCharSelected(item.id)
-                        focusOnItem(i)
-                    }}
-                    onKeyPress={(e) => {
-                        if (e.key === ' ' || e.key === "Enter") {
+                <CSSTransition key={item.id} timeout={500} classNames="char__item">
+                    <li 
+                        className="char__item"
+                        tabIndex={0} // при помощи tabIndex можно поставить ручной фокус даже на дивы и спены
+                        // ref={this.setRef}
+                        // в классовом компаненте что бы устанавливать массив ссылок при помощи колбек рефов использовали функцию setRef
+                        // в ней напрямую пушили ссылку в массив
+                        // сейчас напишем функцию прямо внутри рефа
+                        // в ref может помещаться колбек реф каторый принимает в себя единственным аргументом тот элимент li на катором он был вызван
+                        ref={el => itemRefs.current[i] = el}
+                        // el - элимент на катором происходит действие, ссылка на дом элимент
+                        // сдесь будем использовать не push а простой синтаксис itemRefs.current[i] = el
+                        // в массив itemRefs.current складываем все элименты el попорядку
+                        // key={item.id}
+                        onClick={() => {
                             props.onCharSelected(item.id)
                             focusOnItem(i)
-                        }
-                    }}>
-                        <img src={item.thumbnail} alt="abyss" style={imgStyle}/>
-                        <div className="char__name">{item.name}</div>
-                </li>
+                        }}
+                        onKeyPress={(e) => {
+                            if (e.key === ' ' || e.key === "Enter") {
+                                props.onCharSelected(item.id)
+                                focusOnItem(i)
+                            }
+                        }}>
+                            <img src={item.thumbnail} alt="abyss" style={imgStyle}/>
+                            <div className="char__name">{item.name}</div>
+                    </li>
+                </CSSTransition>
             )
         });
 
         return (
             <ul className="char__grid">
-                {items}
+                <TransitionGroup component={null}>
+                    {items}
+                </TransitionGroup>
             </ul>
         )
     }
