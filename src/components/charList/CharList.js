@@ -1,11 +1,33 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import Spinner from '../spinner/spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import useMarvelService from '../../services/MarvelService';
+// import setContent from '../../utils/setContent';
+
 import './charList.scss';
+
+const setContent = (process, Companent, newItemLoading) => {
+    switch (process) {
+        case 'waiting': // в этом компаненте нет такого состояния когда он ждет в этот момент у него должен появляться спиннер
+            return <Spinner/>;
+            break;              
+        case 'loading': // когда идет загрузка данных первый раз должен отобразиться спиннер последующие разы не должен рендериться null 
+            return newItemLoading ? <Companent/> : <Spinner/>; // что бы контент не прыгал
+            break;
+        case 'confirmed':
+            // return <View char={char}/>;
+            return <Companent/>;
+            break;
+        case 'error':
+            return <ErrorMessage/>;
+            break;
+        default: // если не один кейс не выполнился то выбрасываем новый конструктор ошибки new Error() с сообщением
+            throw new Error('Unexpected process state'); 
+    }
+}
 
 const CharList = (props) => {
 
@@ -28,7 +50,7 @@ const CharList = (props) => {
     // marvelService = new MarvelService();
 
     // const marvelService = new MarvelService();
-    const {loading, error, getAllCharacters} = useMarvelService();
+    const {loading, error, getAllCharacters, process, setProcess} = useMarvelService();
 
     useEffect(() => {
         onRequest(offset, true); // onRequest() стрелочная функция но мы ее вызываем до ее объявления потому что useEffect вызывается после рендера
@@ -53,6 +75,7 @@ const CharList = (props) => {
         // marvelService.getAllCharacters(offset)
         getAllCharacters(offset)
             .then(onCharListLoaded)
+            .then(() => setProcess('confirmed'))
             // .catch(onError)
     }
 
@@ -126,6 +149,7 @@ const CharList = (props) => {
     }
 
     function renderItems(arr) {
+        console.log('render');
         const items = arr.map((item, i) => {
             let imgStyle = {'objectFit' : 'cover'};
             if (item.thumbnail === "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg") {
@@ -176,12 +200,12 @@ const CharList = (props) => {
     // const {charList, loading, error, newItemLoading, offset, charEnded} = this.state; это строчка уже не нужна так как эти переменные уже существуют
 
     // const items = this.renderItems(charList);
-    const items = renderItems(charList);
+    // const items = renderItems(charList);
 
-    const errorMessage = error ? <ErrorMessage/> : null;
+    // const errorMessage = error ? <ErrorMessage/> : null;
     // const spinner = loading ? <Spinner/> : null;
     // таким образом спинер будет показываться тольк при первичной подгрузке когда newItemLoading false
-    const spinner = loading && !newItemLoading ? <Spinner/> : null;
+    // const spinner = loading && !newItemLoading ? <Spinner/> : null;
     // теперь при повтороной подгрузке спинера уже нет но персонажи всеравно исчезают
     // происоходит это потому что состояние charList и loading  каждый раз меняются и перересовывается интерфейс через условие
     // в функциональных компанентах каждый раз идет пересоздание контента внутри когда компанент обновляется
@@ -191,13 +215,32 @@ const CharList = (props) => {
     // можно это переменную просто удалить и рендерить items напрямую даже если он пустой
     // а вот если в какой то момент мы помещаем в верстку null из этого условного рендернга то в таком случае и прыгает верстка персонажи исчезают
     // const content = !(loading || error) ? items : null;
- 
+    
+    // сейчас при нажатии на одно из персонажей в CharInfo передается id и там все отображается но на самом персонаже не отображается
+    // класс активности и только при повторном нажатии он подсвечивается классом
+    // такое происходит потому что при первом нажатии происходит один лишний рендер и персонажи перерисовываются
+    // функция renderItems вызывается когда рендерится компанент но в CharList состояние ни как не меняется при нажатии на персонажа
+    // зато меняется состояние в родительском компаненте MainPage туда приходит айдишка записывается в состояние и передается в CharInfo
+    // и поэтому перерендеривается MainPage и перересрвывает всех своих потомков в том числе и CharList и так как он перерендерился
+    // повторно он не навешивает класс активности на персонажа и при повторном нажатии id не меняется значит и стейт в MainPage тоже не меняется
+    // что бы renderItems не перерендеривалась вместе с повторным рендером компанентов выше ее надо поместить в хук useMemo что бы вызвать 
+    // ее только при изменении состояния process
+    // теперь MainPage перерендоревается а CharList нет
+
+    const elements = useMemo(() => {
+        return setContent(process, () => renderItems(charList), newItemLoading);
+        // eslint-disable-next-line 
+        // строчка дизейбла чтобы небыло сообщения в терминале о дополнтельных зависимостях
+    }, [process]);
+
     return (
         <div className="char__list">
-            {errorMessage}
-            {spinner}
+            {/* {errorMessage}
+            {spinner} */}
             {/* {content} */}
-            {items}
+            {/* {items} */}
+            {/* {setContent(process, () => renderItems(charList), newItemLoading)} */}
+            {elements}
             <button 
                 className="button button__main button__long"
                 disabled={newItemLoading} // disabled блокирует кнопку

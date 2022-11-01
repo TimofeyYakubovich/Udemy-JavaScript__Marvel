@@ -5,7 +5,7 @@ import { useHttp } from "../hooks/http.hook";
 // при создании класса мы не ипортируем компанент потому что этот класс будет на чистом js
 // class MarvelService {
 const useMarvelService = () => {
-    const {loading, request, error, clearError} = useHttp();
+    const {loading, request, error, clearError, process, setProcess} = useHttp();
     // по принципу Don't Repeat Yourself
     // если название свойства начинается с _ то его значение менять нельзя
     const _apiBAse = 'https://gateway.marvel.com:443/v1/public/';
@@ -123,7 +123,16 @@ const useMarvelService = () => {
         }
     }
     // так как useMarvelService наш кастомный хук тоже из него возвращаем все свойства и методы каторые нам нужны в приложении
-    return {loading, error, getAllCharacters, getCharacters, getCharacterByName, clearError, getAllComics, getComic}
+    return {loading, 
+            error, 
+            process,
+            setProcess,
+            getAllCharacters, 
+            getCharacters, 
+            getCharacterByName, 
+            clearError, 
+            getAllComics, 
+            getComic}
 }
 
 // export default MarvelService; // экспортруем класс в index.js

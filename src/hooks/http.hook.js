@@ -4,6 +4,7 @@ export const useHttp = () => {
     // в приложении в 3 компанентах повторяются состояния loading и error поэому мы их вынесим и будем использовать только в этом хуке
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [process, setProcess] = useState('waiting');
 
     // функция каторая будет делать запрос помещаем в useCallback потому что она может передаваться в дочерние компаненты
     // url куда будем посылать запрос
@@ -14,6 +15,9 @@ export const useHttp = () => {
 
         setLoading(true); // перед тем как отправить запрос ставим loading в true как это делалось во всех компанентах
         // будем использовать для запроса try catch потому что в этой функции запрос не будет обрабатоваться 
+
+        setProcess('loading');
+
         try {
             const response = await fetch(url, {method, body, headers}); // ответ от сервера будет помещаться в response
 
@@ -24,10 +28,12 @@ export const useHttp = () => {
             const data = await response.json();
 
             setLoading(false); // когда данные загрузились loading ставим в false
+            // setProcess('confirmed');
             return data; // возвращаем данные полученные от сервера
         } catch(e) {
             setLoading(false); // если пришла ошибка ставим loading в false
             setError(e.message); // в error записываем сообщение об ошибке свойство message
+            setProcess('error');
             throw e; // выкидываем их кетча ошибку (ошибка в переменной e каторая приходит из браузера)
         }
 
@@ -35,8 +41,12 @@ export const useHttp = () => {
     // напишем еще одну функцию каторая будет чистить ошибки null в error
     // например если в RandomChar рандом попадет на id каторой не сущесвтует будет ошибка 404 и при нажатии Try it следующий запрос не пойдет
     // каждый раз там будет весеть ошибка поэтому ее надо очистить
-    const clearError = useCallback(() => setError(null), [])
+    const clearError = useCallback(() => {
+        setError(null);
+        setProcess('loading');
+    }, [])
 
-    return {loading, request, error, clearError}
+    return {loading, request, error, clearError, process, setProcess}
     // теперь этот хук универсальный его можно использовать где угодо в приложении
 }
+

@@ -7,6 +7,26 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 
 import './comicsList.scss';
 
+const setContent = (process, Companent, newItemLoading) => {
+    switch (process) {
+        case 'waiting': // в этом компаненте нет такого состояния когда он ждет в этот момент у него должен появляться спиннер
+            return <Spinner/>;
+            break;              
+        case 'loading': // когда идет загрузка данных первый раз должен отобразиться спиннер последующие разы не должен рендериться null 
+            return newItemLoading ? <Companent/> : <Spinner/>; // что бы контент не прыгал
+            break;
+        case 'confirmed':
+            // return <View char={char}/>;
+            return <Companent/>;
+            break;
+        case 'error':
+            return <ErrorMessage/>;
+            break;
+        default: // если не один кейс не выполнился то выбрасываем новый конструктор ошибки new Error() с сообщением
+            throw new Error('Unexpected process state'); 
+    }
+}
+
 const ComicsList = () => {
 
     const [comicsList, setComicsList] = useState([]);
@@ -14,7 +34,7 @@ const ComicsList = () => {
     const [offset, setOffset] = useState(0);
     const [comicsEnded, setComicsEnded] = useState(false);
 
-    const {loading, error, getAllComics} = useMarvelService();
+    const {loading, error, getAllComics, process, setProcess} = useMarvelService();
 
     useEffect(() => {
         onRequest(offset, true);
@@ -24,6 +44,7 @@ const ComicsList = () => {
         initial ? setnewItemLoading(false) : setnewItemLoading(true);
         getAllComics(offset)
             .then(onComicsListLoaded)
+            .then(() => setProcess('confirmed'))
     }
 
     const onComicsListLoaded = (newComicsList) => {
@@ -65,10 +86,10 @@ const ComicsList = () => {
         )
     }
 
-    const items = renderItems(comicsList);
+    // const items = renderItems(comicsList);
 
-    const errorMessage = error ? <ErrorMessage/> : null;
-    const spinner = loading && !newItemLoading ? <Spinner/> : null;
+    // const errorMessage = error ? <ErrorMessage/> : null;
+    // const spinner = loading && !newItemLoading ? <Spinner/> : null;
 
     // Lesson 176 динамические импорты оптимизация приложения и скорость его работы
     // приложение в ходе разработки становится все больше и больше и в какой то момент омжно придти к тому что приожение будет долго грузиться
@@ -120,9 +141,10 @@ const ComicsList = () => {
 
     return (
         <div className="comics__list">
-            {errorMessage}
+            {/* {errorMessage}
             {spinner}
-            {items}
+            {items} */}
+            {setContent(process, () => renderItems(comicsList), newItemLoading)}
             <button 
                 disabled={newItemLoading} 
                 style={{'display' : comicsEnded ? 'none' : 'block'}}

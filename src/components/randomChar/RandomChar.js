@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import Spinner from '../spinner/spinner';
-import ErrorMessage from '../errorMessage/ErrorMessage';
+// import Spinner from '../spinner/spinner';
+// import ErrorMessage from '../errorMessage/ErrorMessage';
 import useMarvelService from '../../services/MarvelService';
+import setContent from '../../utils/setContent';
 
 import './randomChar.scss';
 import mjolnir from '../../resources/img/mjolnir.png';
@@ -22,7 +23,8 @@ const RandomChar = () => {
     // теперь уже сервис надо создавать не так
     // const marvelService = new MarvelService();
     // loading, error как состояния getCharacters для запроса получения персонажа
-    const {loading, error, getCharacters, clearError} = useMarvelService();
+    // const {loading, error, getCharacters, clearError} = useMarvelService();
+    const {getCharacters, clearError, process, setProcess} = useMarvelService();
 
     useEffect(() => {
         updateChar();
@@ -89,19 +91,21 @@ const RandomChar = () => {
         //     .getCharacters(id)
         getCharacters(id)
             .then(onCharLoaded)
+            .then(() => setProcess('confirmed'))
             // .catch(onError) заменен в useMarvelService // когда произошла ошибка внутри запроса срабатывает метод onError
     }
 
         // const {char, loading, error} = this.state;
-        const errorMessage = error ? <ErrorMessage/> : null;
-        const spinner = loading ? <Spinner/> : null;
-        const content = !(loading || error) ? <View char={char}/> : null;
+        // const errorMessage = error ? <ErrorMessage/> : null;
+        // const spinner = loading ? <Spinner/> : null;
+        // const content = !(loading || error) ? <View char={char}/> : null;
 
         return (
             <div className="randomchar">
-                {errorMessage}
+                {/* {errorMessage}
                 {spinner}
-                {content}
+                {content} */}
+                {setContent(process, View, char)}
                 <div className="randomchar__static">
                     <p className="randomchar__title">
                         Random character for today!<br/>
@@ -121,8 +125,8 @@ const RandomChar = () => {
 
 // в пределах одного компанента разработчики разделяют компанент на несколько частей логические и рендерещие компаненты
 // создадим простой рендерещие компанет каторый будет отображать кусочек верстки без логики
-const View = ({char}) => {
-    const {name, description, thumbnail, homepage, wiki} = char;
+const View = ({data}) => {
+    const {name, description, thumbnail, homepage, wiki} = data;
 
     let imgStyle = {'objectFit' : 'cover'};
     if (thumbnail === "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg") {
